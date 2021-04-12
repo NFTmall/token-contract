@@ -63,7 +63,7 @@ contract("GEM", (accounts) => {
     assert.equal(token_decimal.toString(), "18");
   });
 
-  it("the maximum token supply is 10,000,000,000", async () => {
+  it("the maximum token supply is 20,000,000", async () => {
     let cap = await gem.cap();
     console.log("Maximum token supply:", weiToEther(cap));
     assert.equal(Number(weiToEther(cap)), 20000000);
