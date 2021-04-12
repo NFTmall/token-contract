@@ -231,4 +231,39 @@ contract("GEM", (accounts) => {
     }).should.be.fulfilled;
     await gem.burn(BURN_AMOUNT, { from: accounts[5] }).should.be.fulfilled;
   });
+
+  it("one who is not the owner of GEM contract cannot take a snapshot", async () => {
+    await gem.snapshot({ from: accounts[1] }).should.be.rejected;
+  });
+
+  it("the owner can take a snapshot", async () => {
+    await gem.snapshot().should.be.fulfilled;
+
+    let newSnapshotEvents = await gem.getPastEvents("Snapshot", {
+      fromBlock: 0,
+      toBlock: "latest",
+    });
+    newSnapshotEvents.map(async (e) => {
+      console.log("\n===== New Snapshots====");
+      console.log("current snapshot Id:", e.returnValues.id);
+      console.log("========================\n");
+    });
+  });
+
+  it("retrieves the total supply at the time `snapshotId` was created", async () => {
+    await gem.mint(accounts[2], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.snapshot().should.be.fulfilled;
+    let totalSupplyAtSnapshot1 = await gem.totalSupplyAt(1);
+    console.log(
+      "Total Supply at Snapshot 1:",
+      weiToEther(totalSupplyAtSnapshot1)
+    );
+    assert.equal(Number(weiToEther(totalSupplyAtSnapshot1)), 1000);
+    let balanceAtSnapshot1 = await gem.balanceOfAt(accounts[2], 1);
+    console.log(
+      "Balance of accounts[2] at Snapshot 1:",
+      weiToEther(balanceAtSnapshot1)
+    );
+    assert.equal(Number(weiToEther(balanceAtSnapshot1)), 1000);
+  });
 });
