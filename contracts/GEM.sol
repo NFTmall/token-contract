@@ -6,7 +6,6 @@ import "./openzeppelin-contracts/access/Ownable.sol";
 import "./openzeppelin-contracts/security/Pausable.sol";
 import "./openzeppelin-contracts/token/BEP20/extensions/BEP20Snapshot.sol";
 
-// mock class using ERC20
 contract GEM is Ownable, Pausable, BEP20Snapshot {
 
     uint256 private _cap;
@@ -78,7 +77,7 @@ contract GEM is Ownable, Pausable, BEP20Snapshot {
     }
 
     /**
-     * @dev See {ERC20-_ and ERC20Snapshot-_ beforeTokenTransfer}.
+     * @dev See {BEP20-_ and BEP20Snapshot-_ beforeTokenTransfer}.
      *
      * Requirements:
      *
@@ -87,7 +86,7 @@ contract GEM is Ownable, Pausable, BEP20Snapshot {
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
         super._beforeTokenTransfer(from, to, amount);
 
-        require(!paused(), "ERC20Pausable: token transfer while paused");
+        require(!paused(), "GEM: token transfer while paused");
     }
 
 }
