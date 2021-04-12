@@ -8,7 +8,7 @@ import "./openzeppelin-contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import "./openzeppelin-contracts/token/ERC20/extensions/ERC20Snapshot.sol";
 
 // mock class using ERC20
-contract INf4mation is Ownable, Pausable, ERC20Snapshot {
+contract GEM is Ownable, Pausable, ERC20Snapshot {
 
     uint256 private _cap;
 
