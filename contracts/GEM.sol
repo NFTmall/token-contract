@@ -4,10 +4,10 @@ pragma solidity 0.8.0;
 
 import "./openzeppelin-contracts/access/Ownable.sol";
 import "./openzeppelin-contracts/security/Pausable.sol";
-import "./openzeppelin-contracts/token/ERC20/extensions/ERC20Snapshot.sol";
+import "./openzeppelin-contracts/token/BEP20/extensions/BEP20Snapshot.sol";
 
 // mock class using ERC20
-contract GEM is Ownable, Pausable, ERC20Snapshot {
+contract GEM is Ownable, Pausable, BEP20Snapshot {
 
     uint256 private _cap;
 
@@ -15,7 +15,7 @@ contract GEM is Ownable, Pausable, ERC20Snapshot {
         string memory name,
         string memory symbol,
         uint256 cap_
-    ) ERC20(name, symbol) {
+    ) BEP20(name, symbol) {
         _cap = cap_;
     }
 
