@@ -3,16 +3,16 @@ const BigNumber = web3.utils.BN;
 //ARTIFACTS
 const GEM = artifacts.require("GEM");
 
-const cap = new BigNumber(
+const CAP = new BigNumber(
   web3.utils.toWei("20000000", "ether") //20,000,000
 );
 
-const name = "NFTmall GEM Token";
+const NAME = "NFTmall GEM Token";
 
-const symbol = "GEM";
+const SYMBOL = "GEM";
 
 module.exports = (deployer, network, accounts) => {
-  deployer.deploy(GEM, name, symbol, cap).then(async () => {
+  deployer.deploy(GEM, NAME, SYMBOL, CAP).then(async () => {
     console.log("\nGetting contract instances...");
 
     // TOKENS
