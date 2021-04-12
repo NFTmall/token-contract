@@ -259,9 +259,14 @@ contract("GEM", (accounts) => {
       weiToEther(totalSupplyAtSnapshot1)
     );
     assert.equal(Number(weiToEther(totalSupplyAtSnapshot1)), 1000);
-    let balanceAtSnapshot1 = await gem.balanceOfAt(accounts[2], 1);
+  });
+
+  it("Retrieves the balance of `account` at the time `snapshotId` was created", async () => {
+    await gem.mint(accounts[3], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.snapshot().should.be.fulfilled;
+    let balanceAtSnapshot1 = await gem.balanceOfAt(accounts[3], 1);
     console.log(
-      "Balance of accounts[2] at Snapshot 1:",
+      "Balance of accounts[3] at Snapshot 1:",
       weiToEther(balanceAtSnapshot1)
     );
     assert.equal(Number(weiToEther(balanceAtSnapshot1)), 1000);
