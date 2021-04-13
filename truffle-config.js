@@ -21,7 +21,7 @@ module.exports = {
           mnemonic: {
             phrase: mnemonicPhrase
           },
-          providerOrUrl: "https://mainnet.infura.io/v3/process.env.INFURA_KEY"
+          providerOrUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`
         }),
       network_id: '1',
     },
@@ -51,7 +51,7 @@ module.exports = {
           mnemonic: {
             phrase: mnemonicPhrase
           },
-          providerOrUrl: "https://ropsten.infura.io/v3/process.env.INFURA_KEY"
+          providerOrUrl: `https://ropsten.infura.io/v3/${process.env.INFURA_KEY}`
         }),
       network_id: '3',
     },
@@ -62,7 +62,7 @@ module.exports = {
           mnemonic: {
             phrase: mnemonicPhrase
           },
-          providerOrUrl: "https://rinkeby.infura.io/v3/process.env.INFURA_KEY"
+          providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`
         }),
       network_id: '4',
     },
@@ -73,7 +73,7 @@ module.exports = {
           mnemonic: {
             phrase: mnemonicPhrase
           },
-          providerOrUrl: "https://kovan.infura.io/v3/process.env.INFURA_KEY"
+          providerOrUrl: `https://kovan.infura.io/v3/${process.env.INFURA_KEY}`
         }),
       network_id: '42',
     },
