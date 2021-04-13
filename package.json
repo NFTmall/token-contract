@@ -1,7 +1,7 @@
 {
   "name": "token-contract",
   "version": "1.0.0",
-  "description": "GEM Token",
+  "description": "NFTmall GEM Token",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -25,6 +25,7 @@
     "chai-bn": "^0.1.1",
     "chai-shallow-deep-equal": "^1.4.6",
     "dotenv": "^8.2.0",
+    "ganache-cli": "^6.12.2",
     "solc": "0.8.0",
     "solhint": "^1.1.10",
     "web3": "^1.3.4"
