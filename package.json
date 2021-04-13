@@ -12,8 +12,8 @@
     "type": "git",
     "url": "git+https://github.com/NFTmall/token-contract.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["NFTmall", "GEM", "NFT", "DeFi", "Crypto", "Token"],
+  "author": "NFTmall",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.13.14",
