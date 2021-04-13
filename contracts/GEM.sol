@@ -71,7 +71,10 @@ contract GEM is Ownable, Pausable, BEP20Snapshot {
         _burn(_msgSender(), amount);
         return true;
     }
-   
+
+    /**
+     * @dev Returns the cap of the token.
+     */
     function cap() public view returns (uint256) {
         return _cap;
     }

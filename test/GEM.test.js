@@ -237,7 +237,12 @@ contract("GEM", (accounts) => {
   });
 
   it("the owner can take a snapshot", async () => {
+    // take a snapshot
     await gem.snapshot().should.be.fulfilled;
+
+    // take another snapshot
+    await gem.snapshot().should.be.fulfilled;
+
 
     let newSnapshotEvents = await gem.getPastEvents("Snapshot", {
       fromBlock: 0,
@@ -259,6 +264,16 @@ contract("GEM", (accounts) => {
       weiToEther(totalSupplyAtSnapshot1)
     );
     assert.equal(Number(weiToEther(totalSupplyAtSnapshot1)), 1000);
+
+    // take another snapshot
+    await gem.mint(accounts[2], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.snapshot().should.be.fulfilled;
+    let totalSupplyAtSnapshot2 = await gem.totalSupplyAt(2);
+    console.log(
+      "Total Supply at Snapshot 2:",
+      weiToEther(totalSupplyAtSnapshot2)
+    );
+    assert.equal(Number(weiToEther(totalSupplyAtSnapshot2)), 2000);
   });
 
   it("Retrieves the balance of `account` at the time `snapshotId` was created", async () => {
@@ -270,5 +285,16 @@ contract("GEM", (accounts) => {
       weiToEther(balanceAtSnapshot1)
     );
     assert.equal(Number(weiToEther(balanceAtSnapshot1)), 1000);
+
+    // take another snapshot
+    await gem.mint(accounts[3], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.snapshot().should.be.fulfilled;
+    let balanceAtSnapshot2 = await gem.balanceOfAt(accounts[3], 2);
+    console.log(
+      "Balance of accounts[3] at Snapshot 2:",
+      weiToEther(balanceAtSnapshot2)
+    );
+    assert.equal(Number(weiToEther(balanceAtSnapshot2)), 2000);
   });
+
 });
