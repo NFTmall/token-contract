@@ -11,8 +11,12 @@ const NAME = "NFTmall GEM Token";
 
 const SYMBOL = "GEM";
 
+//const DAO_MULTI_SIG_WALLET = '';
+
+// For local test, use accounts[1] as _daoMultiSig address
+
 module.exports = (deployer, network, accounts) => {
-  deployer.deploy(GEM, NAME, SYMBOL, CAP).then(async () => {
+  deployer.deploy(GEM, NAME, SYMBOL, accounts[1], CAP).then(async () => {
     console.log("\nGetting contract instances...");
 
     // TOKENS

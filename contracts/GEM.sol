@@ -10,13 +10,18 @@ import "./openzeppelin-contracts/token/BEP20/extensions/BEP20Pausable.sol";
 contract GEM is Ownable, BEP20Pausable {
 
     uint256 private _cap;
+    address public _daoMultiSig;
 
     constructor (
         string memory name,
         string memory symbol,
+        address daoMultiSig_,
         uint256 cap_
     ) BEP20(name, symbol) {
+        _mint(daoMultiSig_, cap_);
+        transferOwnership(daoMultiSig_);
         _cap = cap_;
+        _daoMultiSig = daoMultiSig_;
     }
 
         /**
@@ -52,16 +57,6 @@ contract GEM is Ownable, BEP20Pausable {
      */
     function snapshot() external onlyOwner {
         _snapshot();
-    }
-
-    /**
-     * @dev Mint `amount` tokens to `account`.
-     * @dev This function can only be called by the owner of the contract.
-     */
-    function mint(address account, uint256 amount) public onlyOwner returns (bool) {
-        require(totalSupply() + amount <= cap(), "INFormation: cap exceeded");
-        _mint(account, amount);
-        return true;
     }
 
     /**
