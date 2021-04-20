@@ -16,7 +16,7 @@ const SYMBOL = "GEM";
 // For local test, use accounts[1] as _daoMultiSig address
 
 module.exports = (deployer, network, accounts) => {
-  deployer.deploy(GEM, NAME, SYMBOL, accounts[1], CAP).then(async () => {
+  deployer.deploy(GEM, accounts[1]).then(async () => {
     console.log("\nGetting contract instances...");
 
     // TOKENS

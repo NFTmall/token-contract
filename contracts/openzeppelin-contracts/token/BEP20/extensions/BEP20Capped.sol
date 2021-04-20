@@ -8,7 +8,7 @@ import "./BEP20Pausable.sol";
  * @dev Extension of {ERC20} that adds a cap to the supply of tokens.
  */
 abstract contract BEP20Capped is BEP20Pausable {
-    uint256 immutable private _cap;
+    uint256 private _cap;
 
     /**
      * @dev Sets the value of the `cap`. This value is immutable, it can only be

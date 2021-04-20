@@ -11,13 +11,12 @@ contract GEM is Ownable, BEP20Capped {
 
     address public _daoMultiSig;
 
-    constructor (
-        string memory name,
-        string memory symbol,
-        address daoMultiSig_,
-        uint256 cap_
-    ) BEP20(name, symbol) BEP20Capped(cap_) {
-        _mint(daoMultiSig_, cap_);
+    string constant NAME = "NFTmall GEM Token";
+    string constant SYMBOL = "GEM";
+    uint256 constant CAP_ = 20000000 * 1e18;
+
+    constructor (address daoMultiSig_) BEP20(NAME, SYMBOL) BEP20Capped(CAP_) {
+        _mint(daoMultiSig_, CAP_);
         transferOwnership(daoMultiSig_);
     
         _daoMultiSig = daoMultiSig_;
