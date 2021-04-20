@@ -3,13 +3,11 @@
 pragma solidity 0.8.0;
 
 import "./openzeppelin-contracts/access/Ownable.sol";
-import "./openzeppelin-contracts/security/Pausable.sol";
-import "./openzeppelin-contracts/token/BEP20/extensions/BEP20Snapshot.sol";
-import "./openzeppelin-contracts/token/BEP20/extensions/BEP20Burnable.sol";
+import "./openzeppelin-contracts/token/BEP20/extensions/BEP20Pausable.sol";
 
 // openzeppeli/contracts Version 4.0.0
 
-contract GEM is Ownable, Pausable, BEP20Snapshot {
+contract GEM is Ownable, BEP20Pausable {
 
     uint256 private _cap;
 
@@ -21,7 +19,7 @@ contract GEM is Ownable, Pausable, BEP20Snapshot {
         _cap = cap_;
     }
 
-    /**
+        /**
      * @dev Triggers stopped state.
      * @dev This function can only be called by the owner of the contract.
      *
@@ -71,19 +69,6 @@ contract GEM is Ownable, Pausable, BEP20Snapshot {
      */
     function cap() public view returns (uint256) {
         return _cap;
-    }
-
-    /**
-     * @dev See {BEP20-_ and BEP20Snapshot-_ beforeTokenTransfer}.
-     *
-     * Requirements:
-     *
-     * - the contract must not be paused.
-     */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
-        super._beforeTokenTransfer(from, to, amount);
-
-        require(!paused(), "GEM: token transfer while paused");
     }
 
 }
