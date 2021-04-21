@@ -3,11 +3,11 @@
 pragma solidity 0.8.0;
 
 import "./openzeppelin-contracts/access/Ownable.sol";
-import "./openzeppelin-contracts/token/BEP20/extensions/BEP20Capped.sol";
+import "./openzeppelin-contracts/token/BEP20/extensions/draft-BEP20Permit.sol";
 
 // openzeppeli/contracts Version 4.0.0
 
-contract GEM is Ownable, BEP20Capped {
+contract GEM is Ownable, BEP20Permit {
 
     address public daoMultiSig;
 
@@ -15,7 +15,7 @@ contract GEM is Ownable, BEP20Capped {
     string constant SYMBOL = "GEM";
     uint256 constant CAP = 20000000 * 1e18;
 
-    constructor (address daoMultiSig_) BEP20(NAME, SYMBOL) BEP20Capped(CAP) {
+    constructor (address daoMultiSig_) BEP20(NAME, SYMBOL) BEP20Capped(CAP) BEP20Permit(NAME) {
         _mint(daoMultiSig_, CAP);
         transferOwnership(daoMultiSig_);
     
@@ -55,6 +55,10 @@ contract GEM is Ownable, BEP20Capped {
      */
     function snapshot() external onlyOwner {
         _snapshot();
+    }
+
+    function getChainId() external view returns (uint256) {
+        return block.chainid;
     }
 
 }
