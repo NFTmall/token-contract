@@ -9,7 +9,7 @@ import "./openzeppelin-contracts/token/BEP20/extensions/BEP20Capped.sol";
 
 contract GEM is Ownable, BEP20Capped {
 
-    address public _daoMultiSig;
+    address public daoMultiSig;
 
     string constant NAME = "NFTmall GEM Token";
     string constant SYMBOL = "GEM";
@@ -19,7 +19,7 @@ contract GEM is Ownable, BEP20Capped {
         _mint(daoMultiSig_, CAP_);
         transferOwnership(daoMultiSig_);
     
-        _daoMultiSig = daoMultiSig_;
+        daoMultiSig = daoMultiSig_;
     }
 
         /**
