@@ -42,9 +42,12 @@ function weiToEther(w) {
 
 // Start test block
 contract("GEM", (accounts) => {
+  const daoMultiSig = accounts[1]
+
   beforeEach(async () => {
+    
     // Deploy a new token contract contract for each test
-    gem = await GEM.new(NAME, SYMBOL, CAP);
+    gem = await GEM.new(daoMultiSig);
   });
 
   // Test case
@@ -74,34 +77,13 @@ contract("GEM", (accounts) => {
     assert.isFalse(paused);
   });
 
-  it("only the owner can mint tokens", async () => {
-    await gem.mint(accounts[2], TOKEN_AMOUNT, { from: accounts[1] }).should.be
-      .rejected;
-  });
-
-  it("the owner can mint tokens", async () => {
-    await gem.mint(accounts[0], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.mint(accounts[2], TOKEN_AMOUNT).should.be.fulfilled;
-    let tokenMinted0 = await gem.balanceOf(accounts[0]);
-    let tokenMinted2 = await gem.balanceOf(accounts[2]);
-    assert.equal(weiToEther(tokenMinted0), "1000");
-    assert.equal(weiToEther(tokenMinted2), "1000");
-  });
-
-  it("cannot mint tokens more than the cap allowed", async () => {
-    // cap is 20,000,0000
-    await gem.mint(accounts[0], web3.utils.toWei("20000001", "ether")).should.be
-      .rejected;
-  });
-
   it("can tranfer tokens", async () => {
-    await gem.mint(accounts[1], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.transfer(accounts[4], TRANSFER_AMOUNT, { from: accounts[1] })
+    await gem.transfer(accounts[4], TRANSFER_AMOUNT, { from: daoMultiSig })
       .should.be.fulfilled;
   });
 
   it("can approve tokens", async () => {
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
     await gem.approve(accounts[6], APPROVE_AMOUNT, { from: accounts[5] }).should
       .be.fulfilled;
     let approved = await gem.allowance(accounts[5], accounts[6]);
@@ -109,7 +91,7 @@ contract("GEM", (accounts) => {
   });
 
   it("can increase or decrease allowance", async () => {
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
     await gem.approve(accounts[6], APPROVE_AMOUNT, { from: accounts[5] }).should
       .be.fulfilled;
     let approved = await gem.allowance(accounts[5], accounts[6]);
@@ -129,7 +111,7 @@ contract("GEM", (accounts) => {
   });
 
   it("a spender cannot transferFrom more than her allowance", async () => {
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
     await gem.approve(accounts[6], APPROVE_AMOUNT, { from: accounts[5] }).should
       .be.fulfilled;
     await gem.transferFrom(accounts[5], accounts[7], TOKEN_AMOUNT, {
@@ -138,7 +120,7 @@ contract("GEM", (accounts) => {
   });
 
   it("a spender can transferFrom within her allowance", async () => {
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
     await gem.approve(accounts[6], APPROVE_AMOUNT, { from: accounts[5] }).should
       .be.fulfilled;
     await gem.transferFrom(accounts[5], accounts[7], APPROVE_AMOUNT, {
@@ -147,7 +129,7 @@ contract("GEM", (accounts) => {
   });
 
   it("can burn tokens", async () => {
-    await gem.mint(accounts[0], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.transfer(accounts[0], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
     let bal_before = await gem.balanceOf(accounts[0]);
     await gem.burn(BURN_AMOUNT).should.be.fulfilled;
     let bal_after = await gem.balanceOf(accounts[0]);
@@ -156,72 +138,72 @@ contract("GEM", (accounts) => {
   });
 
   it("a token holder cannot burn tokens more than what she owns", async () => {
-    await gem.mint(accounts[5], BURN_AMOUNT).should.be.fulfilled;
+    await gem.transfer(accounts[5], BURN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
     await gem.burn(TOKEN_AMOUNT, { from: accounts[5] }).should.be.rejected;
     await gem.burn(BURN_AMOUNT, { from: accounts[5] }).should.be.fulfilled;
   });
 
   it("only the owner of the token contract can pause the token contract", async () => {
-    await gem.pause({ from: accounts[1] }).should.be.rejected;
+    await gem.pause({ from: accounts[0] }).should.be.rejected;
   });
 
   it("the owner of the token contract can pause the token contract", async () => {
-    await gem.pause().should.be.fulfilled;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
     let paused = await gem.paused();
     assert.isTrue(paused);
   });
 
   it("When token contract is paused, no tokens can be minted", async () => {
-    await gem.pause().should.be.fulfilled;
-    await gem.mint(accounts[0], TOKEN_AMOUNT).should.be.rejected;
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.rejected;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
+    await gem.transfer(accounts[0], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.rejected;
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.rejected;
   });
 
   it("When token contract is paused, no tokens can be transferred", async () => {
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.pause().should.be.fulfilled;
-    await gem.transfer(accounts[1], TOKEN_AMOUNT, { from: accounts[5] }).should
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
+    await gem.transfer(accounts[2], TOKEN_AMOUNT, { from: accounts[5] }).should
       .be.rejected;
   });
 
   it("When token contract is paused, no tokens can be burnt", async () => {
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.pause().should.be.fulfilled;
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
     await gem.burn(BURN_AMOUNT, { from: accounts[5] }).should.be.rejected;
   });
 
   it("When token contract is paused, no tokens can be transferFrom", async () => {
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.approve(accounts[6], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.pause().should.be.fulfilled;
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
+    await gem.approve(accounts[6], TOKEN_AMOUNT, { from: accounts[5] }).should.be.fulfilled;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
     await gem.transferFrom(accounts[5], accounts[7], TOKEN_AMOUNT, {
-      from: accounts[5],
+      from: accounts[6],
     }).should.be.rejected;
   });
 
   it("only the owner of the token contract can unpause the paused token contract", async () => {
-    await gem.pause().should.be.fulfilled;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
     await gem.unpause({ from: accounts[5] }).should.be.rejected;
   });
 
   it("the token contract cannot be paused if it is already paused", async () => {
-    await gem.pause().should.be.fulfilled;
-    await gem.pause().should.be.rejected;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
+    await gem.pause({ from: daoMultiSig }).should.be.rejected;
   });
 
   it("the token contract cannot be unpaused if it is already unpaused", async () => {
-    await gem.unpause().should.be.rejected;
+    await gem.unpause({ from: daoMultiSig }).should.be.rejected;
   });
 
   it("the owner of the token contract can unpause the paused token contract", async () => {
-    await gem.pause().should.be.fulfilled;
-    await gem.unpause().should.be.fulfilled;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
+    await gem.unpause({ from: daoMultiSig }).should.be.fulfilled;
   });
 
   it("normal activities resume after the paused token contract is unpaused by the owner", async () => {
-    await gem.pause().should.be.fulfilled;
-    await gem.unpause().should.be.fulfilled;
-    await gem.mint(accounts[5], TOKEN_AMOUNT).should.be.fulfilled;
+    await gem.pause({ from: daoMultiSig }).should.be.fulfilled;
+    await gem.unpause({ from: daoMultiSig }).should.be.fulfilled;
+    await gem.transfer(accounts[5], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
     await gem.transfer(accounts[2], TRANSFER_AMOUNT, { from: accounts[5] })
       .should.be.fulfilled;
     await gem.approve(accounts[6], APPROVE_AMOUNT, { from: accounts[5] }).should
@@ -233,15 +215,15 @@ contract("GEM", (accounts) => {
   });
 
   it("one who is not the owner of GEM contract cannot take a snapshot", async () => {
-    await gem.snapshot({ from: accounts[1] }).should.be.rejected;
+    await gem.snapshot({ from: accounts[0] }).should.be.rejected;
   });
 
   it("the owner can take a snapshot", async () => {
     // take a snapshot
-    await gem.snapshot().should.be.fulfilled;
+    await gem.snapshot({ from: daoMultiSig }).should.be.fulfilled;
 
     // take another snapshot
-    await gem.snapshot().should.be.fulfilled;
+    await gem.snapshot({ from: daoMultiSig }).should.be.fulfilled;
 
 
     let newSnapshotEvents = await gem.getPastEvents("Snapshot", {
@@ -256,29 +238,29 @@ contract("GEM", (accounts) => {
   });
 
   it("retrieves the total supply at the time `snapshotId` was created", async () => {
-    await gem.mint(accounts[2], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.snapshot().should.be.fulfilled;
+    await gem.transfer(accounts[2], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
+    await gem.snapshot({ from: daoMultiSig }).should.be.fulfilled;
     let totalSupplyAtSnapshot1 = await gem.totalSupplyAt(1);
     console.log(
       "Total Supply at Snapshot 1:",
       weiToEther(totalSupplyAtSnapshot1)
     );
-    assert.equal(Number(weiToEther(totalSupplyAtSnapshot1)), 1000);
+    assert.equal(Number(weiToEther(totalSupplyAtSnapshot1)), 20000000);
 
     // take another snapshot
-    await gem.mint(accounts[2], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.snapshot().should.be.fulfilled;
+    await gem.burn(TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
+    await gem.snapshot({ from: daoMultiSig }).should.be.fulfilled;
     let totalSupplyAtSnapshot2 = await gem.totalSupplyAt(2);
     console.log(
       "Total Supply at Snapshot 2:",
       weiToEther(totalSupplyAtSnapshot2)
     );
-    assert.equal(Number(weiToEther(totalSupplyAtSnapshot2)), 2000);
+    assert.equal(Number(weiToEther(totalSupplyAtSnapshot2)), 20000000 - 1000);
   });
 
   it("Retrieves the balance of `account` at the time `snapshotId` was created", async () => {
-    await gem.mint(accounts[3], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.snapshot().should.be.fulfilled;
+    await gem.transfer(accounts[3], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
+    await gem.snapshot({ from: daoMultiSig }).should.be.fulfilled;
     let balanceAtSnapshot1 = await gem.balanceOfAt(accounts[3], 1);
     console.log(
       "Balance of accounts[3] at Snapshot 1:",
@@ -287,8 +269,8 @@ contract("GEM", (accounts) => {
     assert.equal(Number(weiToEther(balanceAtSnapshot1)), 1000);
 
     // take another snapshot
-    await gem.mint(accounts[3], TOKEN_AMOUNT).should.be.fulfilled;
-    await gem.snapshot().should.be.fulfilled;
+    await gem.transfer(accounts[3], TOKEN_AMOUNT, { from: daoMultiSig }).should.be.fulfilled;
+    await gem.snapshot({ from: daoMultiSig }).should.be.fulfilled;
     let balanceAtSnapshot2 = await gem.balanceOfAt(accounts[3], 2);
     console.log(
       "Balance of accounts[3] at Snapshot 2:",
