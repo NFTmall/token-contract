@@ -7,7 +7,7 @@ const GEM = artifacts.require("GEM");
 
 // In local test, just for testing purpose, use accounts[1] as _daoMultiSig address 
 
-module.exports = (deployer, network, accounts) => {
+module.exports = async (deployer, network, accounts) => {
     await deployer.deploy(GEM, accounts[1]);
 
     let gem = await GEM.deployed();

@@ -1,5 +1,5 @@
 import { 
-    GEM 
+    GEMInstance 
 } from "../types/truffle-contracts";
 
 const { BN, constants, expectEvent, expectRevert, time } = require("@openzeppelin/test-helpers");
@@ -7,7 +7,7 @@ const { BN, constants, expectEvent, expectRevert, time } = require("@openzeppeli
 const GEM = artifacts.require("GEM");
 
 contract("GEM", ([deployer, daoMultisig, whitelistedUser, user1, user2, user3]) => {
-    let token:GEM;
+    let token:GEMInstance;
     
     before(async () => {
         token = await GEM.deployed();
