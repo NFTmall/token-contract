@@ -7,6 +7,7 @@
     <strong>Governance & Utility Token of <a href="https://NFTmall.io" target="_blank">NFTmall.io</a></strong>
 
 ![Solidity](https://img.shields.io/badge/language-solidity-orange.svg?longCache=true&style=popout-square)
+[![Coverage Status](https://coveralls.io/repos/github/NFTmall/token-contract/badge.svg?branch=main)](https://coveralls.io/github/NFTmall/token-contract?branch=main)
 
   </p>
 </div>
