@@ -1,97 +1,70 @@
-const HDWalletProvider = require("@truffle/hdwallet-provider");
-require('dotenv').config()
+require("ts-node/register");
+require("dotenv").config();
 
-const mnemonicPhrase = process.env.MNEMONICS;
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+
+function getProvider(network) {
+    let url;
+	switch(network){
+        case "bsc":
+            url = `https://bsc-dataseed.binance.org/`;
+            break;
+        case "bsctest":
+            url = `https://data-seed-prebsc-1-s1.binance.org:8545/`;
+            break;
+        default:
+            url = `https://${network}.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
+	}
+    return new HDWalletProvider(process.env.KEY_MNEMONIC, url);
+
+}
 
 module.exports = {
-  compilers: {
-    solc: {
-      version: "0.8.0",
-      optimizer: {
-        enabled: true,
-        runs: 200
-      }
-    }
-  },
-  networks: {
-    mainnet: {
-      // must be a thunk, otherwise truffle commands may hang in CI
-      provider: () =>
-        new HDWalletProvider({
-          mnemonic: {
-            phrase: mnemonicPhrase
-          },
-          providerOrUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`
-        }),
-      network_id: '1',
+    plugins: ["truffle-contract-size", "truffle-plugin-verify"],
+
+    test_file_extension_regexp: /.*\.ts$/,
+
+    api_keys: {
+        etherscan: process.env.ETHERSCAN_API_KEY,
+        bscscan: process.env.BSCSCAN_API_KEY,
     },
-    development: {
-      host: "127.0.0.1",
-      port: 8544,
-      network_id: 999 // Match any network id
+
+    networks: {
+        development: {
+            host: "127.0.0.1",
+            port: 8545,
+            network_id: "*",
+        },
+        // rinkeby: {
+        //     provider: () => getProvider("rinkeby"),
+        //     network_id: 4, 
+        //     gasPrice: 20 * 1000000000, 
+        // },
+        // mainnet: {
+        //     provider: () => getProvider("mainnet"),
+        //     network_id: 1, 
+        //     gasPrice: 60 * 1000000000,
+        // },
+        bsctest: {
+            provider: () => getProvider("bsctest"),
+            network_id: 97,
+            gasPrice: 20 * 1000000000, 
+        },
+        bsc: {
+            provider: () => getProvider("bsc"),
+            network_id: 56,
+            gasPrice: 20 * 1000000000, 
+        },
     },
-    testnet: {
-      provider: () => new HDWalletProvider(mnemonicPhrase, `https://data-seed-prebsc-1-s1.binance.org:8545`),
-      network_id: 97,
-      confirmations: 10,
-      timeoutBlocks: 200,
-      skipDryRun: true
+    compilers: {
+        solc: {
+            version: "0.8.4",
+            settings: {
+                optimizer: {
+                    enabled: true,
+                    runs: 20000,
+                },
+            },
+        },
     },
-    bsc: {
-      provider: () => new HDWalletProvider(mnemonicPhrase, `https://bsc-dataseed1.binance.org`),
-      network_id: 56,
-      confirmations: 10,
-      timeoutBlocks: 200,
-      skipDryRun: true
-    },
-    ropsten: {
-      // must be a thunk, otherwise truffle commands may hang in CI
-      provider: () =>
-        new HDWalletProvider({
-          mnemonic: {
-            phrase: mnemonicPhrase
-          },
-          providerOrUrl: `https://ropsten.infura.io/v3/${process.env.INFURA_KEY}`
-        }),
-      network_id: '3',
-    },
-    rinkeby: {
-      // must be a thunk, otherwise truffle commands may hang in CI
-      provider: () =>
-        new HDWalletProvider({
-          mnemonic: {
-            phrase: mnemonicPhrase
-          },
-          providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`
-        }),
-      network_id: '4',
-    },
-    kovan: {
-      // must be a thunk, otherwise truffle commands may hang in CI
-      provider: () =>
-        new HDWalletProvider({
-          mnemonic: {
-            phrase: mnemonicPhrase
-          },
-          providerOrUrl: `https://kovan.infura.io/v3/${process.env.INFURA_KEY}`
-        }),
-      network_id: '42',
-    },
-    live: {
-      host: "127.0.0.1",
-      port: 8545,
-      network_id: 1 // Ethereum public network
-      // optional config values:
-      // gas
-      // gasPrice
-      // from - default address to use for any transaction Truffle makes during migrations
-      // provider - web3 provider instance Truffle should use to talk to the Ethereum network.
-      //          - function that returns a web3 provider instance (see below.)
-      //          - if specified, host and port are ignored.
-    },
-  },
-  mocha: {
-    enableTimeouts: false,
-    useColors: true
-  }
 };

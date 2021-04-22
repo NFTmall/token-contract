@@ -1,64 +1,64 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
-import "./openzeppelin-contracts/access/Ownable.sol";
-import "./openzeppelin-contracts/token/BEP20/extensions/draft-BEP20Permit.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 
 // openzeppeli/contracts Version 4.0.0
 
-contract GEM is Ownable, BEP20Permit {
+contract GEM is AccessControl, ERC20, ERC20Pausable, ERC20Burnable, ERC20Snapshot, ERC20Permit {
+    string public constant NAME = "NFTmall GEM Token";
+    string public constant SYMBOL = "GEM";
+    uint256 public constant MAX_TOTAL_SUPPLY = 20_000_000 * 1e18;
 
-    address public daoMultiSig;
+    bytes32 public constant WHITELISTED_ROLE = keccak256("WHITELISTED_ROLE");       // Whitelisted addresses can transfer token when paused
 
-    string constant NAME = "NFTmall GEM Token";
-    string constant SYMBOL = "GEM";
-    uint256 constant CAP = 20000000 * 1e18;
-
-    constructor (address daoMultiSig_) BEP20(NAME, SYMBOL) BEP20Capped(CAP) BEP20Permit(NAME) {
-        _mint(daoMultiSig_, CAP);
-        transferOwnership(daoMultiSig_);
-    
-        daoMultiSig = daoMultiSig_;
+    modifier onlyAdmin() {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "!admin");
+        _;
     }
 
-        /**
-     * @dev Triggers stopped state.
-     * @dev This function can only be called by the owner of the contract.
-     *
+    constructor (address daoMultiSig) ERC20(NAME, SYMBOL) ERC20Permit(NAME) {
+        _setupRole(DEFAULT_ADMIN_ROLE, daoMultiSig);   // DEFAULT_ADMIN_ROLE can grant other roles
+        _mint(daoMultiSig, MAX_TOTAL_SUPPLY);
+    }
+
+
+    /**
+     * @notice Triggers stopped state.
      * Requirements:
-     *
      * - The contract must not be paused.
      */
-
-    function pause() external onlyOwner {
+    function pause() external onlyAdmin {
         _pause();
     }
 
     /**
-     * @dev Returns to normal state.
-     * @dev This function can only be called by the owner of the contract.
-     *
+     * @notice Returns to normal state.
      * Requirements:
-     *
      * - The contract must be paused.
      */
-    function unpause() external onlyOwner {
+    function unpause() external onlyAdmin {
         _unpause();
     }
 
     /**
-     * @dev Creates a new snapshot and returns its snapshot id.
-     *
-     * Emits a {Snapshot} event that contains the same id.
-     * Only the owner of this contract can create a snapshot.
+     * @notice Creates a new snapshot and returns its snapshot id.
      */
-    function snapshot() external onlyOwner {
+    function snapshot() external onlyAdmin {
         _snapshot();
     }
 
-    function getChainId() external view returns (uint256) {
-        return block.chainid;
+    /**
+     * @dev This function is overriden in both ERC20Pausable and ERC20Snapshot, so we need to specify execution order here.
+     */
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal override(ERC20, ERC20Pausable, ERC20Snapshot) {
+        ERC20Pausable._beforeTokenTransfer(from, to, amount);
+        ERC20Snapshot._beforeTokenTransfer(from, to, amount);
     }
-
 }
