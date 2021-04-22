@@ -20,7 +20,7 @@ function getProvider(network) {
 }
 
 module.exports = {
-    plugins: ["truffle-contract-size", "truffle-plugin-verify"],
+    plugins: ["truffle-contract-size", "truffle-plugin-verify", "solidity-coverage"],
 
     test_file_extension_regexp: /.*\.ts$/,
 
