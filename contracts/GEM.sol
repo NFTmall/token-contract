@@ -56,9 +56,10 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
 
     /**
      * @notice Creates a new snapshot and returns its snapshot id.
+     * @return id of created snapshot
      */
-    function snapshot() external onlyAdmin {
-        _snapshot();
+    function snapshot() external onlyAdmin returns(uint256) {
+        return _snapshot();
     }
 
 
