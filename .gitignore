@@ -6,8 +6,10 @@ node_modules/
 
 # project artifacts
 build/contracts/*
+build/coverage/*
 types/*
 .vscode
+coverage.json
 
 #logs
 npm-debug.log*
