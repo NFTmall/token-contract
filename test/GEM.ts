@@ -63,6 +63,13 @@ contract("GEM", ([deployer, daoMultisig, whitelistedUser, user1, user2, user3]) 
         expectEvent(res, "Transfer");
     });
 
+    it("should allow not whitelisted user to transfer from whitelisted", async () => {   
+        let amount = web3.utils.toWei('10', 'ether');
+        await token.approve(user1, amount, {from:whitelistedUser});
+        let res = await token.transferFrom(whitelistedUser, user2, amount, {from:user1});
+        expectEvent(res, "Transfer");
+    });
+
     it("can be unpaused", async () => {   
         await token.unpause({from:daoMultisig});
         let paused = await token.paused();

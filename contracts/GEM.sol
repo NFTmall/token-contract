@@ -88,6 +88,11 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override(ERC20, ERC20Snapshot) {
         super._beforeTokenTransfer(from, to, amount);
 
-        require(!paused() || hasRole(WHITELISTED_ROLE, _msgSender()), "transfers paused");
+        require(
+            !paused() ||                                    // unpaused mode
+            hasRole(WHITELISTED_ROLE, _msgSender()) ||      // transfer initiated by whitelisted address (allow trusted parties to transfer where it is needed)
+            hasRole(WHITELISTED_ROLE, from),                // from is whitelisted (can be used to add liquidity on uniswap )
+            "transfers paused"
+        );
     }
 }
