@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.0;
 
+// Openzeppelin Contracts Version 4.0.0
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -12,8 +13,6 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-
-// openzeppeli/contracts Version 4.0.0
 
 contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ERC20Permit {
     using SafeERC20 for IERC20;
@@ -83,7 +82,7 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
 
 
     /**
-     * @dev This function is overriden in both ERC20Pausable and ERC20Snapshot, so we need to specify execution order here.
+     * @dev This function is overridden in both ERC20 and ERC20Snapshot, so we need to specify execution order here.
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override(ERC20, ERC20Snapshot) {
         super._beforeTokenTransfer(from, to, amount);
@@ -91,7 +90,7 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
         require(
             !paused() ||                                    // unpaused mode
             hasRole(WHITELISTED_ROLE, _msgSender()) ||      // transfer initiated by whitelisted address (allow trusted parties to transfer where it is needed)
-            hasRole(WHITELISTED_ROLE, from),                // from is whitelisted (can be used to add liquidity on uniswap )
+            hasRole(WHITELISTED_ROLE, from),                // from is whitelisted (can be used to add liquidity on uniswap without bot's pump and dump)
             "transfers paused"
         );
     }
