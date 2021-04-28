@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: MIT
+/*
+     ______________
+    /_  _ ___ _____\                    _   _ 
+   /| \| | __|_   _|\    _ __    __ _  | | | |
+  { | .` | _|  | |   }  | '  \  / _` | | | | |
+   \|_|\_|_|   |_|  /   |_|_|_| \__,_| |_| |_|
+     \            /
+       \        /
+         \    /
+           💎
 
+  https://nftmall.io
+*/
+
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 // Openzeppelin Contracts Version 4.0.0
@@ -34,7 +47,6 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
         _mint(daoMultiSig, MAX_TOTAL_SUPPLY);
     }
 
-
     /**
      * @notice Triggers stopped state.
      * Requirements:
@@ -61,25 +73,35 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
         return _snapshot();
     }
 
-
+    /**
+     * @notice A safety measure to recover accidentally locked BNB(ETH)
+     */
     function withdrawETH() external onlyAdmin {
         uint256 balance = address(this).balance;
         payable(_msgSender()).transfer(balance);
     }
 
+    /**
+     * @notice A safety measure to recover accidentally locked BEP20(ERC20) tokens
+     */
     function withdrawERC20(IERC20 token) external onlyAdmin {
         uint256 balance = token.balanceOf(address(this));
         token.safeTransfer(_msgSender(), balance);
     }
 
+    /**
+     * @notice A safety measure to recover accidentally locked ERC721 NFT
+     */
     function withdrawERC721(IERC721 token, uint256 id) external onlyAdmin {
         token.transferFrom(address(this), _msgSender(), id);
     }
 
+    /**
+     * @notice A safety measure to recover accidentally locked ERC1155 NFT
+     */
     function withdrawERC1155(IERC1155 token, uint256 id, uint256 amount, bytes calldata data) external onlyAdmin {
         token.safeTransferFrom(address(this), _msgSender(), id, amount, data);
     }
-
 
     /**
      * @dev This function is overridden in both ERC20 and ERC20Snapshot, so we need to specify execution order here.
