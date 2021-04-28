@@ -1,24 +1,21 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-package-lock.json
+#environment
+.env
 
-# Coverage directory used by tools like istanbul
-coverage/
-coverage.json
-
-# Dependency directories
+#node libs
 node_modules/
 
-# Optional npm cache directory
-.npm
+# project artifacts
+build/contracts/*
+build/coverage/*
+types/*
+.vscode
+coverage.json
 
-# Output of 'npm pack'
-*.tgz
-.idea/*
+#logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-.env
-steps
-
-build
+# MacOS junk
+.DS_Store
+/.private_key
