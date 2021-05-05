@@ -36,15 +36,15 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
 
     bytes32 public constant WHITELISTED_ROLE = keccak256("WHITELISTED_ROLE");       // Whitelisted addresses can transfer token when paused
 
-    modifier onlyAdmin() {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "!admin");
+    modifier onlyGovernance() {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "!governance");
         _;
     }
 
-    constructor (address daoMultiSig) ERC20(NAME, SYMBOL) ERC20Permit(NAME) {
-        _setupRole(DEFAULT_ADMIN_ROLE, daoMultiSig);   // DEFAULT_ADMIN_ROLE can grant other roles
-        _setupRole(WHITELISTED_ROLE, daoMultiSig);
-        _mint(daoMultiSig, MAX_TOTAL_SUPPLY);
+    constructor (address _governance) ERC20(NAME, SYMBOL) ERC20Permit(NAME) {
+        _setupRole(DEFAULT_ADMIN_ROLE, _governance);   // DEFAULT_ADMIN_ROLE can grant other roles
+        _setupRole(WHITELISTED_ROLE, _governance);
+        _mint(_governance, MAX_TOTAL_SUPPLY);
     }
 
     /**
@@ -52,7 +52,7 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
      * Requirements:
      * - The contract must not be paused.
      */
-    function pause() external onlyAdmin {
+    function pause() external onlyGovernance {
         _pause();
     }
 
@@ -61,7 +61,7 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
      * Requirements:
      * - The contract must be paused.
      */
-    function unpause() external onlyAdmin {
+    function unpause() external onlyGovernance {
         _unpause();
     }
 
@@ -69,7 +69,7 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
      * @notice Creates a new snapshot and returns its snapshot id.
      * @return id of created snapshot
      */
-    function snapshot() external onlyAdmin returns(uint256) {
+    function snapshot() external onlyGovernance returns(uint256) {
         return _snapshot();
     }
 
