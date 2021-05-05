@@ -10,6 +10,8 @@
         "generate-types": "npx truffle compile --all && npx typechain --target=truffle-v5 \"build/contracts/*.json\"",
         "generate-abi": "npx truffle compile --all && npx truffle-abi -o ./abi",
         "generate-artifacts": "npx truffle compile --all && npx truffle-abi -o ./build/abi && npx typechain --target=truffle-v5 \"build/contracts/*.json\"",
+        "deploy-rinkeby": "npx truffle migrate --network rinkeby --reset",
+        "verify-rinkeby": "npx truffle run verify GEM --network rinkeby",
         "deploy-bsctest": "npx truffle migrate --network bsctest --reset",
         "verify-bsctest": "npx truffle run verify GEM --network bsctest",
         "deploy-bsc": "npx truffle migrate --network bsc --reset",
