@@ -39,13 +39,17 @@ module.exports = {
             provider: () => getProvider("rinkeby"),
             network_id: 4, 
             gasPrice: 20 * 1000000000, 
-            skipDryRun: true,
         },
         mainnet: {
             provider: () => getProvider("mainnet"),
             network_id: 1, 
             gasPrice: 60 * 1000000000,
         },
+        // mainnet: {
+        //     provider: () => getProvider("mainnet"),
+        //     network_id: 1, 
+        //     gasPrice: 60 * 1000000000,
+        // },
         bsctest: {
             provider: () => getProvider("bsctest"),
             network_id: 97,
