@@ -241,7 +241,20 @@
   },
   {
     "inputs": [],
-    "name": "WHITELISTED_ROLE",
+    "name": "WHITELISTED_FROM_ROLE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "WHITELISTED_MSG_SENDER_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",

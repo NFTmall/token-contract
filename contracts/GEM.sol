@@ -34,7 +34,8 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
     string public constant SYMBOL = "GEM";
     uint256 public constant MAX_TOTAL_SUPPLY = 20_000_000 * 1e18;
 
-    bytes32 public constant WHITELISTED_ROLE = keccak256("WHITELISTED_ROLE");       // Whitelisted addresses can transfer token when paused
+    bytes32 public constant WHITELISTED_MSG_SENDER_ROLE = keccak256("WHITELISTED_MSG_SENDER_ROLE");       // Can transfer his own and transferFrom somebody's approved token when paused
+    bytes32 public constant WHITELISTED_FROM_ROLE = keccak256("WHITELISTED_FROM_ROLE");                   // Anyone approved can transfer tokens from addresses with this role when paused
 
     modifier onlyGovernance() {
         require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "!governance");
@@ -43,7 +44,8 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
 
     constructor (address _governance) ERC20(NAME, SYMBOL) ERC20Permit(NAME) {
         _setupRole(DEFAULT_ADMIN_ROLE, _governance);   // DEFAULT_ADMIN_ROLE can grant other roles
-        _setupRole(WHITELISTED_ROLE, _governance);
+        _setupRole(WHITELISTED_MSG_SENDER_ROLE, _governance);   // Allows manual transfers
+        _setupRole(WHITELISTED_FROM_ROLE, _governance);         // Allows add liquidity to Uniswap
         _mint(_governance, MAX_TOTAL_SUPPLY);
     }
 
@@ -81,8 +83,8 @@ contract GEM is AccessControl, ERC20, Pausable, ERC20Burnable, ERC20Snapshot, ER
 
         require(
             !paused() ||                                    // unpaused mode
-            hasRole(WHITELISTED_ROLE, _msgSender()) ||      // transfer initiated by whitelisted address (allow trusted parties to transfer where it is needed)
-            hasRole(WHITELISTED_ROLE, from),                // from is whitelisted (can be used to add liquidity on uniswap without bot's pump and dump)
+            hasRole(WHITELISTED_MSG_SENDER_ROLE, _msgSender()) ||      // transfer initiated by whitelisted address (allow trusted parties to transfer where it is needed)
+            hasRole(WHITELISTED_FROM_ROLE, from),                      // from is whitelisted (can be used to add liquidity on uniswap without bot's pump and dump)
             "transfers paused"
         );
     }
